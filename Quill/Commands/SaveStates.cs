@@ -9,9 +9,11 @@ using Unity.Collections;
 using Unity.Netcode;
 using UnityEngine;
 using static Quill.Main;
+using ChatCommands;
 
 namespace Quill
 {
+
     public class SaveStates : ChatCommand
     {
         static List<string> words = new List<string> { "dung", "fungusBeetle_mushroomlaunchpad", "RhinoBeetle_SmallSpike", "RhinoBeetle_BallSpike", "BombardierBeetle_SlipperyDecal" };
@@ -25,8 +27,8 @@ namespace Quill
         public class NetworkObjectData
         {
             public string Name;
-            public Vector3 Position;
-            public Quaternion Rotation;
+            public UnityEngine.Vector3 Position;
+            public UnityEngine.Quaternion Rotation;
         }
 
         public static void Init()
@@ -35,7 +37,7 @@ namespace Quill
             harmony.PatchAll(Assembly.GetExecutingAssembly());
         }
 
-
+        
         public SaveStates() : base("ss", "saves / loads savestates", SaveStatesExecute, 1)
         {
         }
@@ -67,6 +69,7 @@ namespace Quill
                         currentState.Dungs.Clear();
                         currentState.NetworkObjects.Clear();
                         SaveCurrentState();
+                        BeetleUtils.SendChatMessage("Saved current state!");
                         break;
                     case "load":
                         LoadCurrentState(AllNetWorkObjectSnapchot);
@@ -108,12 +111,12 @@ namespace Quill
             foreach (var DunData in currentState.Dungs)
             {
                 var rpcParams = new RpcParams(); // initializes new non null rpc params
-                prefabSpawner.SpawnDungBall_ServerRpc(DunData.Position, Vector3.zero, DunData.Size, 0 ,rpcParams);
+                prefabSpawner.SpawnDungBall_ServerRpc(DunData.Position, UnityEngine.Vector3.zero, DunData.Size, 0 ,rpcParams);
             }
 
             foreach (var data in currentState.NetworkObjects)
             {
-                var prefab = new GameObject();
+                var prefab = new UnityEngine.GameObject();
                 string name = data.Name;
 
                 if (name != null)
@@ -128,7 +131,7 @@ namespace Quill
                         }
                     }
 
-                    GameObject obj = UnityEngine.Object.Instantiate(prefab, data.Position, data.Rotation);
+                    UnityEngine.GameObject obj = UnityEngine.Object.Instantiate(prefab, data.Position, data.Rotation);
 
                     var netObj = obj.GetComponent<NetworkObject>();
                     if (netObj != null)

@@ -4,6 +4,8 @@ using Unity.Netcode;
 using static Quill.Main;
 using HarmonyLib;
 using System.Reflection;
+using ChatCommands;
+
 namespace Quill
 {
     public class DisableScoring : ChatCommand
@@ -46,6 +48,7 @@ namespace Quill
             }
 
         }
+
         [HarmonyPatch(typeof(Goal), "BallEnteredGoal_ServerRpc")]
         class Goal_BallEnteredGoal_ServerRpc_Patch
         {
